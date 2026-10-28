@@ -63,11 +63,66 @@ const isStandalone =
 
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 
+// ---- PWA: service worker + auto-update --------------------------------
+const updateBar = document.getElementById("update-bar");
+const updateBtn = document.getElementById("update-btn");
+
+function showUpdateBar(worker) {
+  updateBar.hidden = false;
+  updateBtn.onclick = () => {
+    updateBtn.disabled = true;
+    updateBtn.textContent = "Updating…";
+    worker.postMessage("SKIP_WAITING");
+  };
+}
+
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch((err) => {
+  window.addEventListener("load", async () => {
+    try {
+      // If a worker already controls this page, a controllerchange means we
+      // just picked up a new version -> reload. On the very first visit there
+      // is no controller yet, and we must NOT reload.
+      const hadController = !!navigator.serviceWorker.controller;
+
+      const reg = await navigator.serviceWorker.register("sw.js", { updateViaCache: "none" });
+
+      // A new version finished installing and is waiting to take over.
+      reg.addEventListener("updatefound", () => {
+        const incoming = reg.installing;
+        if (!incoming) return;
+        incoming.addEventListener("statechange", () => {
+          if (incoming.state === "installed" && navigator.serviceWorker.controller) {
+            showUpdateBar(incoming);
+          }
+        });
+      });
+
+      // Reload once the new worker takes control.
+      let reloading = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!hadController || reloading) return;
+        reloading = true;
+        window.location.reload();
+      });
+
+      // Check for a new version whenever the app regains focus (throttled).
+      let lastCheck = 0;
+      const checkForUpdate = () => {
+        const now = Date.now();
+        if (now - lastCheck < 60_000) return;
+        lastCheck = now;
+        reg.update().catch(() => {});
+      };
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") checkForUpdate();
+      });
+      window.addEventListener("focus", checkForUpdate);
+
+      // Also look for a new version on a timer while the app stays open.
+      setInterval(checkForUpdate, 10 * 60 * 1000);
+    } catch (err) {
       console.warn("Service worker registration failed:", err);
-    });
+    }
   });
 }
 

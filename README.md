@@ -61,3 +61,15 @@ Applications / Dock. Installation requires `localhost` or HTTPS — opening
 `index.html` via `file://` will not install.
 
 Full guide (Pashto + English, including phone install and updates): **[INSTALL.md](INSTALL.md)**.
+
+## Getting new changes into the installed app
+
+The installed app runs from the files on your machine (`localhost`), so GitHub
+is only the source of changes — pull them in:
+
+- **Windows:** double-click `update.bat`
+- **macOS / Linux:** `bash update.sh`
+
+That runs `git pull` and restarts the server. The app also checks for a new
+service-worker version on focus and every 10 minutes, and shows an **Update**
+bar when one is available.
