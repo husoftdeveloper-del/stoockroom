@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Sign in · Stoockroom</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#0b0d17" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Track stock levels, locations and movements across every site." />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Stoockroom" />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-theme="rose">
+    <div class="aurora" aria-hidden="true">
+      <span class="blob b1"></span>
+      <span class="blob b2"></span>
+      <span class="blob b3"></span>
+    </div>
+
+    <main class="shell">
+      <!-- Brand / marketing side -->
+      <section class="brand">
+        <div class="logo">
+          <span class="logo-mark">S</span>
+          <span class="logo-text">Stoockroom</span>
+        </div>
+        <h1>Warehouse clarity,<br /><em>without the paperwork.</em></h1>
+        <p class="lede">
+          Track stock levels, locations and movements across every site — in one calm,
+          fast workspace.
+        </p>
+        <ul class="ticks">
+          <li>Live stock counts across locations</li>
+          <li>Low-stock alerts before you run out</li>
+          <li>Audit trail for every movement</li>
+        </ul>
+      </section>
+
+      <!-- Login card -->
+      <section class="card">
+        <header class="card-head">
+          <h2>Welcome back</h2>
+          <p>Sign in to continue to your stockroom.</p>
+        </header>
+
+        <form id="login-form" novalidate>
+          <label class="field">
+            <span>Email</span>
+            <input
+              type="email"
+              name="email"
+              placeholder="you@company.com"
+              autocomplete="username"
+              required
+            />
+          </label>
+
+          <label class="field">
+            <span>Password</span>
+            <div class="pw">
+              <input
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                autocomplete="current-password"
+                required
+              />
+              <button type="button" class="pw-toggle" aria-label="Show password">Show</button>
+            </div>
+          </label>
+
+          <div class="row">
+            <label class="check">
+              <input type="checkbox" name="remember" checked />
+              <span>Remember me</span>
+            </label>
+            <a href="#" class="link">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-primary">Sign in</button>
+          <p class="msg" id="msg" role="status"></p>
+        </form>
+
+        <p class="foot">Don't have an account? <a href="#" class="link">Request access</a></p>
+      </section>
+    </main>
+
+    <!-- Live color switcher -->
+    <aside class="switcher" aria-label="Color theme">
+      <span class="switcher-label">Color</span>
+      <button class="dot" data-set="indigo" style="--d:#6366f1" aria-label="Indigo"></button>
+      <button class="dot" data-set="emerald" style="--d:#10b981" aria-label="Emerald"></button>
+      <button class="dot" data-set="rose" style="--d:#ef4444" aria-label="Red"></button>
+      <button class="dot" data-set="amber" style="--d:#f59e0b" aria-label="Amber"></button>
+      <button class="dot" data-set="slate" style="--d:#64748b" aria-label="Slate"></button>
+    </aside>
+
+    <!-- Install prompt -->
+    <button id="install-btn" class="install" hidden>
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v12" />
+        <path d="m7 10 5 5 5-5" />
+        <path d="M5 21h14" />
+      </svg>
+      <span>Install app</span>
+    </button>
+
+    <!-- New version available -->
+    <div id="update-bar" class="update-bar" hidden>
+      <span>نوی نسخه شته — د تازه کولو لپاره کلیک وکړه</span>
+      <button type="button" id="update-btn">Update</button>
+    </div>
+
+    <!-- iOS instructions -->
+    <div id="ios-hint" class="ios-hint" hidden>
+      <strong>Install on iPhone / iPad</strong>
+      <p>Tap the <em>Share</em> button, then choose <em>Add to Home Screen</em>.</p>
+      <button type="button" class="ios-close" aria-label="Dismiss">Got it</button>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
