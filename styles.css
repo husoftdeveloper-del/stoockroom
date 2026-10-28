@@ -20,9 +20,9 @@
   --glow: 16 185 129;
 }
 [data-theme="rose"] {
-  --accent: #f43f5e;
-  --accent-2: #fb7185;
-  --glow: 244 63 94;
+  --accent: #ef4444;
+  --accent-2: #f43f5e;
+  --glow: 239 68 68;
 }
 [data-theme="amber"] {
   --accent: #f59e0b;

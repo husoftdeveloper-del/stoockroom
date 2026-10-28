@@ -1,5 +1,5 @@
 /* Stoockroom service worker — offline shell */
-const CACHE = "stoockroom-v1";
+const CACHE = "stoockroom-v2";
 const ASSETS = [
   "./",
   "./index.html",

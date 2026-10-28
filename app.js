@@ -1,10 +1,10 @@
 // ---- Theme switching ---------------------------------------------------
 const dots = document.querySelectorAll(".dot");
-const saved = localStorage.getItem("login-theme") || "emerald";
+const saved = localStorage.getItem("login-theme-v2") || "rose";
 
 function applyTheme(name) {
   document.body.dataset.theme = name;
-  localStorage.setItem("login-theme", name);
+  localStorage.setItem("login-theme-v2", name);
   dots.forEach((d) => d.setAttribute("aria-pressed", String(d.dataset.set === name)));
 }
 
