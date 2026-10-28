@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Dashboard · Stoockroom</title>
+
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#0b0d17" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Stoockroom" />
+
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body class="dash" data-theme="rose">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="logo" href="dashboard.html">
+          <span class="logo-mark">S</span>
+          <span class="logo-text">Stoockroom</span>
+        </a>
+
+        <div class="search">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input id="search" type="search" placeholder="Search items, SKU or location…" aria-label="Search inventory" />
+        </div>
+
+        <div class="user-menu">
+          <button class="user-chip" id="user-chip" aria-haspopup="menu" aria-expanded="false">
+            <span class="avatar" id="avatar">A</span>
+            <span class="user-meta">
+              <strong id="user-name">—</strong>
+              <small id="user-role">—</small>
+            </span>
+            <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+
+          <div class="menu" id="menu" role="menu" hidden>
+            <div class="menu-head">
+              <strong id="menu-name">—</strong>
+              <span id="menu-email">—</span>
+            </div>
+            <button class="menu-item" id="change-pw-open" role="menuitem">Change password</button>
+            <button class="menu-item danger" id="logout" role="menuitem">Sign out</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class="page-head">
+        <div>
+          <h1 id="greeting">Dashboard</h1>
+          <p class="sub" id="today"></p>
+        </div>
+        <button class="btn-ghost" id="refresh">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M21 12a9 9 0 1 1-2.6-6.4" />
+            <path d="M21 3v6h-6" />
+          </svg>
+          Refresh
+        </button>
+      </div>
+
+      <section class="stats" id="stats" aria-label="Summary"></section>
+
+      <div class="panels">
+        <section class="panel" aria-labelledby="inv-title">
+          <div class="panel-head">
+            <h2 id="inv-title">Inventory</h2>
+            <div class="chips" id="filters" role="tablist" aria-label="Filter inventory">
+              <button class="chip is-active" data-filter="all" role="tab" aria-selected="true">All</button>
+              <button class="chip" data-filter="low" role="tab" aria-selected="false">Low</button>
+              <button class="chip" data-filter="out" role="tab" aria-selected="false">Out</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col">Location</th>
+                  <th scope="col" class="num">Qty</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+            <p class="empty" id="empty" hidden>هیڅ شی ونه موندل شو.</p>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="mv-title">
+          <div class="panel-head">
+            <h2 id="mv-title">Recent movements</h2>
+          </div>
+          <ul class="movements" id="movements"></ul>
+        </section>
+      </div>
+    </main>
+
+    <!-- Change password dialog -->
+    <dialog id="pw-dialog" class="dialog">
+      <form method="dialog" id="pw-form" novalidate>
+        <h2>Change password</h2>
+
+        <label class="field">
+          <span>Current password</span>
+          <input type="password" name="current" autocomplete="current-password" required />
+        </label>
+        <label class="field">
+          <span>New password</span>
+          <input type="password" name="next" autocomplete="new-password" minlength="8" required />
+        </label>
+        <label class="field">
+          <span>Repeat new password</span>
+          <input type="password" name="confirm" autocomplete="new-password" required />
+        </label>
+
+        <p class="msg" id="pw-msg" role="status"></p>
+
+        <div class="dialog-actions">
+          <button type="button" class="btn-ghost" id="pw-cancel">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

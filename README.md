@@ -1,6 +1,31 @@
 # Stoockroom
 
-Installable stock & inventory web app. Login screen with an Emerald dark theme.
+Installable stock & inventory web app — a working sign-in flow, a guarded
+dashboard, and offline support. Red dark theme by default.
+
+## Sign in
+
+| Account | Email | Password |
+| --- | --- | --- |
+| Demo (seeded automatically) | `admin@stoockroom.af` | `stoockroom123` |
+
+Or hit **Create account** on the login screen — new accounts are stored on the
+device and can sign in offline.
+
+How the auth actually works (`auth.js`):
+
+- Passwords are **never** stored in plain text: PBKDF2-SHA256, 150 000 rounds,
+  random 16-byte salt per user, derived with `crypto.subtle`.
+- Sessions are random 32-byte tokens with an expiry — 7 days with
+  *Remember me* (`localStorage`), 12 hours without (`sessionStorage`).
+- 5 wrong passwords lock that email for 60 seconds.
+- `dashboard.html` is guarded by `Auth.requireAuth()`: no session → straight
+  back to the login page, with `?next=` preserved.
+- Change password from the dashboard user menu.
+
+> Accounts live in this browser's storage, which is what makes the app work with
+> no server (GitHub Pages has none). They are therefore per-device. Swapping
+> `Auth` for an API/Supabase call later needs no UI changes.
 
 ## Run locally
 
@@ -28,13 +53,25 @@ and works offline after the first load.
 > Installation requires **HTTPS** or **localhost**. Opening `index.html`
 > directly via `file://` will show the page but cannot install.
 
+## Tests
+
+```bash
+npm install      # once, for jsdom
+npm test         # auth engine: hashing, sessions, lockout, validation (20 checks)
+npm run test:ui  # login page + guarded dashboard in a DOM (34 checks)
+```
+
 ## Files
 
 | File | Purpose |
 | --- | --- |
-| `index.html` | Login screen, PWA meta tags, install button |
-| `styles.css` | Theme system (5 color themes) + layout |
-| `app.js` | Show/hide password, validation, theme switcher, SW + install flow |
+| `index.html` | Login / create-account screen, PWA meta tags, install button |
+| `dashboard.html` | Guarded dashboard: stats, inventory table, movements |
+| `auth.js` | Sign-in engine: hashing, sessions, lockout, change password |
+| `app.js` | Login wiring, tabs, theme switcher, SW + install flow |
+| `dashboard.js` | Auth guard, rendering, filters, search, user menu |
+| `styles.css` / `dashboard.css` | Theme system (5 themes) + layouts |
+| `tests/` | Node test suites for auth and the UI |
 | `sw.js` | Service worker, offline cache |
 | `manifest.webmanifest` | App name, icons, standalone display |
 | `icons/` | App icons (SVG + PNG 192/512/maskable/apple-touch) |

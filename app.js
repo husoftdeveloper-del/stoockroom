@@ -11,61 +11,208 @@ function applyTheme(name) {
 applyTheme(saved);
 dots.forEach((dot) => dot.addEventListener("click", () => applyTheme(dot.dataset.set)));
 
-// ---- Show / hide password ----------------------------------------------
-const pwInput = document.querySelector('input[name="password"]');
-const pwToggle = document.querySelector(".pw-toggle");
+// ---- Show / hide password (works for every .pw field) -------------------
+document.querySelectorAll(".pw").forEach((wrap) => {
+  const input = wrap.querySelector("input");
+  const toggle = wrap.querySelector(".pw-toggle");
+  if (!input || !toggle) return;
 
-pwToggle.addEventListener("click", () => {
-  const showing = pwInput.type === "text";
-  pwInput.type = showing ? "password" : "text";
-  pwToggle.textContent = showing ? "Show" : "Hide";
-  pwToggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
-  pwInput.focus();
+  toggle.addEventListener("click", () => {
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    toggle.textContent = showing ? "Show" : "Hide";
+    toggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    input.focus();
+  });
 });
 
-// ---- Form submit (no backend yet) --------------------------------------
-const form = document.getElementById("login-form");
-const msg = document.getElementById("msg");
+// ---- Sign in / Create account tabs -------------------------------------
+const tabs = document.querySelectorAll(".tab");
+const panels = {
+  signin: document.getElementById("panel-signin"),
+  signup: document.getElementById("panel-signup"),
+};
+const footText = document.getElementById("foot-text");
+const footSwitch = document.getElementById("foot-switch");
 
-form.addEventListener("submit", (e) => {
+function setMode(mode, { focus = false } = {}) {
+  tabs.forEach((tab) => {
+    const active = tab.dataset.mode === mode;
+    tab.classList.toggle("is-active", active);
+    tab.setAttribute("aria-selected", String(active));
+  });
+  panels.signin.hidden = mode !== "signin";
+  panels.signup.hidden = mode !== "signup";
+  footText.textContent = mode === "signin" ? "Don't have an account?" : "Already have an account?";
+  footSwitch.textContent = mode === "signin" ? "Create one" : "Sign in";
+  clearMsg();
+
+  if (focus) {
+    const first = (mode === "signin" ? panels.signin : panels.signup).querySelector("input");
+    first?.focus();
+  }
+}
+
+tabs.forEach((tab) => tab.addEventListener("click", () => setMode(tab.dataset.mode)));
+footSwitch.addEventListener("click", (e) => {
   e.preventDefault();
-  msg.classList.remove("ok");
-  msg.textContent = "";
-
-  const email = form.email.value.trim();
-  const password = form.password.value;
-
-  if (!email) return (msg.textContent = "Please enter your email address.");
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    return (msg.textContent = "That email address doesn't look right.");
-  if (password.length < 6)
-    return (msg.textContent = "Password must be at least 6 characters.");
-
-  const btn = form.querySelector(".btn-primary");
-  btn.disabled = true;
-  btn.textContent = "Signing in…";
-
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.textContent = "Sign in";
-    msg.classList.add("ok");
-    msg.textContent = "Looks good — ready to connect to the backend.";
-  }, 700);
+  setMode(panels.signin.hidden ? "signin" : "signup", { focus: true });
 });
 
-// ---- PWA: service worker + install flow --------------------------------
+// ---- Message helper ----------------------------------------------------
+const msg = document.getElementById("msg");
+const signupMsg = document.getElementById("signup-msg");
+
+function clearMsg() {
+  [msg, signupMsg].forEach((el) => {
+    if (!el) return;
+    el.textContent = "";
+    el.classList.remove("ok");
+  });
+}
+
+function showError(el, text) {
+  if (!el) return;
+  el.classList.remove("ok");
+  el.textContent = text;
+  el.closest(".card")?.classList.add("shake");
+  setTimeout(() => el.closest(".card")?.classList.remove("shake"), 420);
+}
+
+function showOk(el, text) {
+  if (!el) return;
+  el.classList.add("ok");
+  el.textContent = text;
+}
+
+async function withBusy(button, busyLabel, task) {
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = busyLabel;
+  try {
+    return await task();
+  } finally {
+    button.disabled = false;
+    button.textContent = original;
+  }
+}
+
+// ---- Sign in -----------------------------------------------------------
+const form = document.getElementById("login-form");
+const loginBtn = form.querySelector(".btn-primary");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearMsg();
+
+  await withBusy(loginBtn, "Signing in…", async () => {
+    try {
+      const user = await Auth.login({
+        email: form.elements.email.value,
+        password: form.elements.password.value,
+        remember: form.elements.remember.checked,
+      });
+
+      showOk(msg, `Welcome back, ${user.name.split(" ")[0]}!`);
+
+      const params = new URLSearchParams(location.search);
+      const nextParam = params.get("next");
+      const next = nextParam && /^[\w.-]+\.html$/.test(nextParam) ? nextParam : "dashboard.html";
+      setTimeout(() => location.assign(next), 450);
+    } catch (err) {
+      showError(msg, err.message || "ننوتل ونشول. بیا هڅه وکړه.");
+    }
+  });
+});
+
+// ---- Create account ----------------------------------------------------
+const signupForm = document.getElementById("signup-form");
+const signupBtn = signupForm.querySelector(".btn-primary");
+const strengthBar = document.getElementById("strength");
+
+signupForm.elements.password?.addEventListener("input", () => {
+  const value = signupForm.elements.password.value;
+  let score = 0;
+  if (value.length >= 8) score++;
+  if (value.length >= 12) score++;
+  if (/[A-Z]/.test(value) && /[a-z]/.test(value)) score++;
+  if (/\d/.test(value) || /[^\w\s]/.test(value)) score++;
+  strengthBar.dataset.score = String(score);
+});
+
+signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearMsg();
+
+  await withBusy(signupBtn, "Creating…", async () => {
+    try {
+      const user = await Auth.register({
+        name: signupForm.elements.name.value,
+        email: signupForm.elements.email.value,
+        password: signupForm.elements.password.value,
+        confirm: signupForm.elements.confirm.value,
+      });
+      showOk(signupMsg, `حساب جوړ شو — ښه راغلاست ${user.name.split(" ")[0]}!`);
+      setTimeout(() => location.assign("dashboard.html"), 500);
+    } catch (err) {
+      showError(signupMsg, err.message || "حساب جوړ نشو. بیا هڅه وکړه.");
+    }
+  });
+});
+
+// ---- Forgot password (local accounts: no email server available) --------
+document.getElementById("forgot-link").addEventListener("click", (e) => {
+  e.preventDefault();
+  const email = form.elements.email.value.trim() || "your email";
+  showError(
+    msg,
+    `د دې اپ حسابونه پر همدې وسیله دي، نو د بیا رغولو لینک نه شي لېږل کېدای. که پاسورډ هېر شو، له مدیر سره اړیکه ونیسه یا نوی حساب جوړ کړه (${email}).`
+  );
+});
+
+// ---- Demo account autofill ---------------------------------------------
+document.getElementById("demo-fill")?.addEventListener("click", () => {
+  form.elements.email.value = Auth.DEMO.email;
+  form.elements.password.value = Auth.DEMO.password;
+  form.elements.password.dispatchEvent(new Event("input"));
+  form.querySelector('button[type="submit"]').focus();
+});
+
+// ---- Session / URL state -----------------------------------------------
+(async () => {
+  // Already signed in? Go straight to the app.
+  if (Auth.redirectIfLoggedIn()) return;
+
+  // Make sure the demo account exists so the hint is never a lie.
+  try {
+    await Auth.seed();
+  } catch {
+    // crypto.subtle only exists in secure contexts (https / localhost).
+    showError(
+      msg,
+      "د اپ امنیتي برخه نه شي چالانېدای. پاڼه دې له https یا localhost نه پرانیزل شي."
+    );
+  }
+
+  const params = new URLSearchParams(location.search);
+  if (params.get("expired")) showOk(msg, "ستا سیشن پای ته ورسېد — بیا ننوته.");
+  if (params.get("signedout")) showOk(msg, "په ښه توګه ووتلې. بیا هم راشه!");
+
+  const email = params.get("email");
+  if (email) form.elements.email.value = email;
+})();
+
+// ---- PWA: service worker + auto-update --------------------------------
 const installBtn = document.getElementById("install-btn");
 const iosHint = document.getElementById("ios-hint");
+const updateBar = document.getElementById("update-bar");
+const updateBtn = document.getElementById("update-btn");
 let deferredPrompt = null;
 
 const isStandalone =
   window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
 
 const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-
-// ---- PWA: service worker + auto-update --------------------------------
-const updateBar = document.getElementById("update-bar");
-const updateBtn = document.getElementById("update-btn");
 
 function showUpdateBar(worker) {
   updateBar.hidden = false;
@@ -79,14 +226,10 @@ function showUpdateBar(worker) {
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
-      // If a worker already controls this page, a controllerchange means we
-      // just picked up a new version -> reload. On the very first visit there
-      // is no controller yet, and we must NOT reload.
       const hadController = !!navigator.serviceWorker.controller;
 
       const reg = await navigator.serviceWorker.register("sw.js", { updateViaCache: "none" });
 
-      // A new version finished installing and is waiting to take over.
       reg.addEventListener("updatefound", () => {
         const incoming = reg.installing;
         if (!incoming) return;
@@ -97,7 +240,6 @@ if ("serviceWorker" in navigator) {
         });
       });
 
-      // Reload once the new worker takes control.
       let reloading = false;
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         if (!hadController || reloading) return;
@@ -105,7 +247,6 @@ if ("serviceWorker" in navigator) {
         window.location.reload();
       });
 
-      // Check for a new version whenever the app regains focus (throttled).
       let lastCheck = 0;
       const checkForUpdate = () => {
         const now = Date.now();
@@ -117,8 +258,6 @@ if ("serviceWorker" in navigator) {
         if (document.visibilityState === "visible") checkForUpdate();
       });
       window.addEventListener("focus", checkForUpdate);
-
-      // Also look for a new version on a timer while the app stays open.
       setInterval(checkForUpdate, 10 * 60 * 1000);
     } catch (err) {
       console.warn("Service worker registration failed:", err);
@@ -126,7 +265,6 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// Chrome / Edge / Android: native install prompt
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -144,11 +282,9 @@ installBtn?.addEventListener("click", async () => {
 window.addEventListener("appinstalled", () => {
   installBtn.hidden = true;
   iosHint.hidden = true;
-  msg?.classList.add("ok");
-  if (msg) msg.textContent = "Stoockroom installed — you can launch it from your home screen.";
+  showOk(msg, "Stoockroom installed — you can launch it from your home screen.");
 });
 
-// iOS Safari has no install event: show manual instructions once
 if (isIOS && !isStandalone && !localStorage.getItem("ios-hint-dismissed")) {
   installBtn.hidden = true;
   iosHint.hidden = false;
@@ -158,9 +294,5 @@ document.querySelector(".ios-close")?.addEventListener("click", () => {
   localStorage.setItem("ios-hint-dismissed", "1");
 });
 
-// Offline / online status
-window.addEventListener("offline", () => {
-  if (!msg) return;
-  msg.classList.remove("ok");
-  msg.textContent = "You're offline — the app still works from cache.";
-});
+// Offline status
+window.addEventListener("offline", () => showError(msg, "ته آفلاین یې — اپ له کېش نه کار کوي."));

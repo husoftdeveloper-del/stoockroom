@@ -4,12 +4,16 @@
  * the installed app still opens without a network connection.
  * Bump CACHE_VERSION whenever the shell changes.
  */
-const CACHE_VERSION = "stoockroom-v4";
+const CACHE_VERSION = "stoockroom-v5";
 const SHELL = [
   "./",
   "./index.html",
   "./styles.css",
+  "./auth.js",
   "./app.js",
+  "./dashboard.html",
+  "./dashboard.css",
+  "./dashboard.js",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
