@@ -46,3 +46,18 @@ Themes live in `styles.css` — five accent pairs: `indigo`, `emerald`, `rose`,
 `amber`, `slate`. Set the default in `index.html` (`<body data-theme="...">`)
 and in `app.js` (`localStorage.getItem("login-theme") || "emerald"`).
 You can also switch themes live with the swatches at the bottom of the page.
+
+## Install on your laptop
+
+1. Get the files: `git clone https://github.com/husoftdeveloper-del/stoockroom.git` (or download the ZIP) and check out `arena/20252ded-stoockroom`.
+2. Start the local server:
+   - **Windows:** double-click `start.bat`
+   - **macOS / Linux:** `bash start.sh`
+3. The browser opens `http://localhost:5173`.
+4. Click **Install app** (top right) or the install icon in the address bar → **Install**.
+
+The app then opens in its own window and gets an entry in the Start Menu /
+Applications / Dock. Installation requires `localhost` or HTTPS — opening
+`index.html` via `file://` will not install.
+
+Full guide (Pashto + English, including phone install and updates): **[INSTALL.md](INSTALL.md)**.
