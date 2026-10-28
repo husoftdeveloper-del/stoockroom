@@ -46,52 +46,144 @@
         </ul>
       </section>
 
-      <!-- Login card -->
+      <!-- Auth card -->
       <section class="card">
-        <header class="card-head">
-          <h2>Welcome back</h2>
-          <p>Sign in to continue to your stockroom.</p>
-        </header>
+        <div class="tabs" role="tablist" aria-label="Authentication">
+          <button
+            class="tab is-active"
+            role="tab"
+            id="tab-signin"
+            aria-selected="true"
+            aria-controls="panel-signin"
+            data-mode="signin"
+          >
+            Sign in
+          </button>
+          <button
+            class="tab"
+            role="tab"
+            id="tab-signup"
+            aria-selected="false"
+            aria-controls="panel-signup"
+            data-mode="signup"
+          >
+            Create account
+          </button>
+        </div>
 
-        <form id="login-form" novalidate>
-          <label class="field">
-            <span>Email</span>
-            <input
-              type="email"
-              name="email"
-              placeholder="you@company.com"
-              autocomplete="username"
-              required
-            />
-          </label>
+        <!-- ---------- Sign in ---------- -->
+        <div id="panel-signin" role="tabpanel" aria-labelledby="tab-signin">
+          <header class="card-head">
+            <h2>Welcome back</h2>
+            <p>Sign in to continue to your stockroom.</p>
+          </header>
 
-          <label class="field">
-            <span>Password</span>
-            <div class="pw">
+          <form id="login-form" novalidate>
+            <label class="field">
+              <span>Email</span>
               <input
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                autocomplete="current-password"
+                type="email"
+                name="email"
+                placeholder="you@company.com"
+                autocomplete="username"
                 required
               />
-              <button type="button" class="pw-toggle" aria-label="Show password">Show</button>
-            </div>
-          </label>
-
-          <div class="row">
-            <label class="check">
-              <input type="checkbox" name="remember" checked />
-              <span>Remember me</span>
             </label>
-            <a href="#" class="link">Forgot password?</a>
+
+            <label class="field">
+              <span>Password</span>
+              <div class="pw">
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="••••••••"
+                  autocomplete="current-password"
+                  required
+                />
+                <button type="button" class="pw-toggle" aria-label="Show password">Show</button>
+              </div>
+            </label>
+
+            <div class="row">
+              <label class="check">
+                <input type="checkbox" name="remember" checked />
+                <span>Remember me</span>
+              </label>
+              <a href="#" class="link" id="forgot-link">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="btn-primary">Sign in</button>
+            <p class="msg" id="msg" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="demo-hint" id="demo-hint">
+            <span class="demo-label">Demo account</span>
+            <code>admin@stoockroom.af</code>
+            <code>stoockroom123</code>
+            <button type="button" class="demo-fill" id="demo-fill">Fill in</button>
           </div>
+        </div>
 
-          <button type="submit" class="btn-primary">Sign in</button>
-          <p class="msg" id="msg" role="status"></p>
-        </form>
+        <!-- ---------- Create account ---------- -->
+        <div id="panel-signup" role="tabpanel" aria-labelledby="tab-signup" hidden>
+          <header class="card-head">
+            <h2>Create your account</h2>
+            <p>It stays on this device — you can sign in offline.</p>
+          </header>
 
-        <p class="foot">Don't have an account? <a href="#" class="link">Request access</a></p>
+          <form id="signup-form" novalidate>
+            <label class="field">
+              <span>Full name</span>
+              <input type="text" name="name" placeholder="Ahmad Khan" autocomplete="name" required />
+            </label>
+
+            <label class="field">
+              <span>Email</span>
+              <input
+                type="email"
+                name="email"
+                placeholder="you@company.com"
+                autocomplete="username"
+                required
+              />
+            </label>
+
+            <label class="field">
+              <span>Password</span>
+              <div class="pw">
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="At least 8 characters"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+                />
+                <button type="button" class="pw-toggle" aria-label="Show password">Show</button>
+              </div>
+              <div class="strength" id="strength" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            </label>
+
+            <label class="field">
+              <span>Confirm password</span>
+              <input
+                type="password"
+                name="confirm"
+                placeholder="Repeat your password"
+                autocomplete="new-password"
+                required
+              />
+            </label>
+
+            <button type="submit" class="btn-primary">Create account</button>
+            <p class="msg" id="signup-msg" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <p class="foot">
+          <span id="foot-text">Don't have an account?</span>
+          <a href="#" class="link" id="foot-switch">Create one</a>
+        </p>
       </section>
     </main>
 
@@ -128,6 +220,7 @@
       <button type="button" class="ios-close" aria-label="Dismiss">Got it</button>
     </div>
 
+    <script src="auth.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,0 +1,14 @@
+{
+  "name": "stoockroom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Installable stock & inventory PWA with a real client-side sign-in flow",
+  "scripts": {
+    "start": "python3 serve.py 5173",
+    "test": "node tests/auth.test.mjs",
+    "test:ui": "node tests/ui.test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  }
+}
