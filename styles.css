@@ -353,3 +353,62 @@ input:focus {
   .blob { animation: none; }
   * { transition: none !important; }
 }
+
+/* ---- Install prompt ---------------------------------------------------- */
+.install {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--glow) / 0.45);
+  background: rgb(var(--glow) / 0.14);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: background 0.2s, transform 0.15s;
+  z-index: 20;
+}
+.install:hover { background: rgb(var(--glow) / 0.24); transform: translateY(-1px); }
+.install svg { color: var(--accent); }
+
+.ios-hint {
+  position: fixed;
+  inset: auto 16px 84px 16px;
+  margin: 0 auto;
+  max-width: 380px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: rgba(16, 19, 32, 0.95);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 20px 50px -20px #000;
+  font-size: 13.5px;
+  color: var(--muted);
+  z-index: 30;
+}
+.ios-hint strong { display: block; color: var(--text); margin-bottom: 6px; }
+.ios-hint p { margin: 0 0 14px; line-height: 1.55; }
+.ios-hint em { color: var(--accent); font-style: normal; font-weight: 600; }
+.ios-close {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0a0b12;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  cursor: pointer;
+}
+
+/* `hidden` must win over the display rules above */
+.install[hidden],
+.ios-hint[hidden] { display: none !important; }

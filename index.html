@@ -2,8 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Sign in · Stoockroom</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#0b0d17" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Track stock levels, locations and movements across every site." />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Stoockroom" />
+
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-theme="emerald">
@@ -90,6 +104,23 @@
       <button class="dot" data-set="amber" style="--d:#f59e0b" aria-label="Amber"></button>
       <button class="dot" data-set="slate" style="--d:#64748b" aria-label="Slate"></button>
     </aside>
+
+    <!-- Install prompt -->
+    <button id="install-btn" class="install" hidden>
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3v12" />
+        <path d="m7 10 5 5 5-5" />
+        <path d="M5 21h14" />
+      </svg>
+      <span>Install app</span>
+    </button>
+
+    <!-- iOS instructions -->
+    <div id="ios-hint" class="ios-hint" hidden>
+      <strong>Install on iPhone / iPad</strong>
+      <p>Tap the <em>Share</em> button, then choose <em>Add to Home Screen</em>.</p>
+      <button type="button" class="ios-close" aria-label="Dismiss">Got it</button>
+    </div>
 
     <script src="app.js"></script>
   </body>
